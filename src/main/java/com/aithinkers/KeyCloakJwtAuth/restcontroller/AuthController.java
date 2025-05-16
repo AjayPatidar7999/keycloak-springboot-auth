@@ -70,4 +70,46 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
+    
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody Map<String, String> body) {
+        String refreshToken = body.get("refresh_token");
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            return ResponseEntity.badRequest().body("Refresh token is required");
+        }
+
+        String logoutUrl = keycloakUrl + "/realms/" + realm + "/protocol/openid-connect/logout";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+        form.add("client_id", clientId);
+        form.add("client_secret", clientSecret);
+        form.add("refresh_token", refreshToken);
+
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(form, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            restTemplate.postForEntity(logoutUrl, entity, String.class);
+            return ResponseEntity.ok("Logout successful");
+        } catch (HttpClientErrorException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Logout failed: " + ex.getMessage());
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
