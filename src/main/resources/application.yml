@@ -1,0 +1,28 @@
+# application.yml
+server:
+  port: 8081
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: springboot-client
+            client-secret: YOUR_CLIENT_SECRET
+            authorization-grant-type: password
+            scope: openid
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/myrealm
+            user-name-attribute: preferred_username
+
+keycloak:
+  realm: myrealm
+  auth-server-url: http://localhost:8080
+  ssl-required: none
+  resource: springboot-client
+  credentials:
+    secret: YOUR_CLIENT_SECRET
+  use-resource-role-mappings: true
+  bearer-only: true
